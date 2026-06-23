@@ -25,20 +25,19 @@ public class SwerveModuleConfig {
         drivingConfig
                 .closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .pid(0, 0, 0)
-//                .velocityFF(0.0)
+                .pid(0.11185, 0, 0)
                 .outputRange(-1, 1);
 
         turningConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20);
         turningConfig
                 .absoluteEncoder
-                .inverted(false)
+                .inverted(true)
                 .positionConversionFactor(turningFactor)
                 .velocityConversionFactor(turningFactor / 60.0);
         turningConfig
                 .closedLoop
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-                .pid(0, 0, 0)
+                .pid(1.0, 0, 0)
                 .outputRange(-1, 1)
                 .positionWrappingEnabled(true)
                 .positionWrappingInputRange(0, turningFactor);

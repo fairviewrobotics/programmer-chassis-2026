@@ -18,10 +18,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-    private final SwerveModule frontLeft = new SwerveModule(0, 0, 0);
-    private final SwerveModule frontRight = new SwerveModule(0, 0, 0);
-    private final SwerveModule backLeft = new SwerveModule(0, 0, 0);
-    private final SwerveModule backRight = new SwerveModule(0, 0, 0);
+    private final SwerveModule frontLeft = new SwerveModule(SwerveConstants.FRONT_LEFT_DRIVING_CAN_ID, SwerveConstants.FRONT_LEFT_TURNING_CAN_ID, SwerveConstants.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET);
+    private final SwerveModule frontRight = new SwerveModule(SwerveConstants.FRONT_RIGHT_DRIVING_CAN_ID, SwerveConstants.FRONT_RIGHT_TURNING_CAN_ID, SwerveConstants.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET);
+    private final SwerveModule backLeft = new SwerveModule(SwerveConstants.REAR_LEFT_DRIVING_CAN_ID, SwerveConstants.REAR_LEFT_TURNING_CAN_ID, SwerveConstants.REAR_LEFT_CHASSIS_ANGULAR_OFFSET);
+    private final SwerveModule backRight = new SwerveModule(SwerveConstants.REAR_RIGHT_DRIVING_CAN_ID, SwerveConstants.REAR_RIGHT_TURNING_CAN_ID, SwerveConstants.REAR_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
@@ -77,6 +77,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3,N1> stdDevs) {
         poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        poseEstimator.resetPose(pose);
     }
 
     public void zeroGyro() {

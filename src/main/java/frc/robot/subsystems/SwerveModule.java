@@ -36,7 +36,7 @@ public class SwerveModule extends SubsystemBase {
     private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
     private SimpleMotorFeedforward feedforward =
-            new SimpleMotorFeedforward(0, 0, 0, 0);
+            new SimpleMotorFeedforward(0, 0.22, 0, 0.02);
 
     public SwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
         drivingSpark = new SparkFlex(drivingCANId, MotorType.kBrushless);
@@ -117,4 +117,5 @@ public class SwerveModule extends SubsystemBase {
     public void setDrivingVoltage(double voltage) {
         this.drivingSpark.setVoltage(voltage);
     }
+
 }
