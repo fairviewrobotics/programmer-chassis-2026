@@ -33,7 +33,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter());
+//      Logger.addDataReceiver(new WPILOGWriter());
       Logger.addDataReceiver(new NT4Publisher());
     } else {
       setUseTiming(false);

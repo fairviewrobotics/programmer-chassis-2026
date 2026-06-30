@@ -37,7 +37,7 @@ public class DriveCommand extends Command {
 
         double xVel = xSpeed * SwerveConstants.MAX_DRIVE_VELOCITY_MPS;
         double yVel = ySpeed * SwerveConstants.MAX_DRIVE_VELOCITY_MPS;
-        double turningVel = turningSpeed * (Math.PI * 2);
+        double turningVel = turningSpeed * SwerveConstants.MAX_DRIVE_VELOCITY_MPS;
 
         swerve.drive(xVel, yVel, turningVel);
     }

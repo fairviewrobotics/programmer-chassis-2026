@@ -8,7 +8,7 @@ import frc.robot.subsystems.SwerveModuleConfig;
 
 public class SwerveConstants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 5.0;
-    public static final double MAX_ANGULAR_SPEED = Double.MAX_VALUE;
+    public static final double MAX_ANGULAR_SPEED = Math.PI * 8;
 
     public static final double DIRECTION_SLEW_RATE = 0;
     public static final double MAGNITUDE_SLEW_RATE = 0;
@@ -25,10 +25,10 @@ public class SwerveConstants {
                     new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
                     new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2));
 
-    public static final double FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = 4.291;
-    public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 3.433;
-    public static final double REAR_LEFT_CHASSIS_ANGULAR_OFFSET = 0.625;
-    public static final double REAR_RIGHT_CHASSIS_ANGULAR_OFFSET = 3.997;
+    public static final double FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = 2.838;
+    public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 1.968;
+    public static final double REAR_LEFT_CHASSIS_ANGULAR_OFFSET = 2.275;
+    public static final double REAR_RIGHT_CHASSIS_ANGULAR_OFFSET = 4.359;
 
     public static final int FRONT_LEFT_DRIVING_CAN_ID = 3;
     public static final int FRONT_RIGHT_DRIVING_CAN_ID = 5;
@@ -39,6 +39,12 @@ public class SwerveConstants {
     public static final int FRONT_RIGHT_TURNING_CAN_ID = 6;
     public static final int REAR_LEFT_TURNING_CAN_ID = 21;
     public static final int REAR_RIGHT_TURNING_CAN_ID = 8;
+
+    public static final double Turning_P = 0.5;
+    public static final double Turning_D = 0.0;
+
+    public static final double Driving_P = 1.0;
+    public static final double Driving_D = 0.0;
 
     public static final boolean GYRO_REVERSED = false;
 

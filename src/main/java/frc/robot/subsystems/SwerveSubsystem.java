@@ -25,23 +25,25 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
+    private final SwerveDrivePoseEstimator poseEstimator;
+
     public SwerveSubsystem() {
         initializePreferences();
-    }
 
-    private final SwerveDrivePoseEstimator poseEstimator =
-            new SwerveDrivePoseEstimator(
-                    SwerveConstants.DRIVE_KINEMATICS,
-                    gyro.getRotation2d(),
-                    new SwerveModulePosition[] {
-                            frontLeft.getPosition(),
-                            frontRight.getPosition(),
-                            backLeft.getPosition(),
-                            backRight.getPosition()
-                    },
-                    Pose2d.kZero,
-                    VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-                    VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+        this.poseEstimator = new SwerveDrivePoseEstimator(
+                SwerveConstants.DRIVE_KINEMATICS,
+                gyro.getRotation2d(),
+                new SwerveModulePosition[] {
+                        frontLeft.getPosition(),
+                        frontRight.getPosition(),
+                        backLeft.getPosition(),
+                        backRight.getPosition()
+                },
+                Pose2d.kZero,
+                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+        );
+    }
 
     public void drive(double xVel, double yVel, double omega) {
         var swerveModuleStates =
@@ -68,19 +70,17 @@ public class SwerveSubsystem extends SubsystemBase {
         Preferences.initDouble("Swerve/TurningD", 0);
     }
 
-//    public void updatePreferences() {
-//        frontLeft.refreshPreferences();
-//        frontRight.refreshPreferences();
-//        backLeft.refreshPreferences();
-//        backRight.refreshPreferences();
-//    }
-
     public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3,N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
+        if (poseEstimator != null) {
+            poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
+        }
     }
 
     public void resetOdometry(Pose2d pose) {
-        poseEstimator.resetPose(pose);
+        if (poseEstimator != null) {
+            poseEstimator.resetPose(pose
+            );
+        }
     }
 
     public void zeroGyro() {
@@ -88,11 +88,24 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
+        return poseEstimator != null ? poseEstimator.getEstimatedPosition() : Pose2d.kZero;
+    }
+
+    public ChassisSpeeds getFieldVelocity() {
+        ChassisSpeeds robotRelativeSpeeds = SwerveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
+                frontLeft.getState(),
+                frontRight.getState(),
+                backLeft.getState(),
+                backRight.getState()
+        );
+        return ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeSpeeds, gyro.getRotation2d());
     }
 
     @Override
     public void periodic() {
+        if (poseEstimator == null) {
+            return;
+        }
 
         poseEstimator.update(
                 gyro.getRotation2d(),
@@ -110,7 +123,5 @@ public class SwerveSubsystem extends SubsystemBase {
                 frontRight.getState(),
                 backLeft.getState(),
                 backRight.getState());
-
     }
-
 }

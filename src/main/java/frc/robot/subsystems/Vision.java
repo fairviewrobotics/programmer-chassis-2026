@@ -46,6 +46,12 @@ public class Vision extends SubsystemBase {
         };
         this.cameraPoses = getAdjustedCameraPoses();
 
+        try {
+            this.fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to load AprilTagFieldLayout!", e.getStackTrace());
+        }
+
         Preferences.initDouble("Vision/BASE_XY_STD_DEV", VisionConstants.BASE_VISION_XY_STD_DEV);
         Preferences.initDouble("Vision/BASE_THETA_STD_DEV", VisionConstants.BASE_VISION_THETA_STD_DEV);
         Preferences.initDouble("Vision/MAX_Z_ERROR", VisionConstants.MAX_Z_ERROR);
@@ -69,7 +75,6 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Guard clause: If the layout failed to load, don't try to process targets
         if (fieldLayout == null) return;
 
         updatePose();

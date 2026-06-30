@@ -5,14 +5,19 @@
 package frc.robot;
 
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.DriveToPoint;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,7 +31,7 @@ public class RobotContainer {
     final CommandXboxController secondary_controller = new CommandXboxController(1);
     private final SwerveSubsystem swerve = new SwerveSubsystem();
 //    private final SuperSecretMissileTech superSecretMissileTech = new SuperSecretMissileTech(swerve);
-//    private final Vision vision = new Vision(swerve);
+    private final Vision vision = new Vision(swerve);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -53,10 +58,15 @@ public class RobotContainer {
                         swerve,
                         primary_controller::getLeftX,
                         primary_controller::getLeftY,
-                        primary_controller::getRightX
+                        () -> -1 * primary_controller.getRightX()
                 )
         );
+
         primary_controller.options().onTrue(new InstantCommand(swerve::zeroGyro));
+        primary_controller.pov(180).onTrue(new InstantCommand(() -> swerve.resetOdometry(Pose2d.kZero)));
+        primary_controller.cross().whileTrue(
+            new DriveToPoint(swerve, new Pose2d(1,0, Rotation2d.kZero), 0.2)
+        );
 
 //        secondary_controller.rightStick().onTrue(new RefreshPreferences(swerve));
 
