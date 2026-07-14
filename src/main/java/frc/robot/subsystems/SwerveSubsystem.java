@@ -5,6 +5,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -24,6 +25,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule backRight = new SwerveModule(SwerveConstants.REAR_RIGHT_DRIVING_CAN_ID, SwerveConstants.REAR_RIGHT_TURNING_CAN_ID, SwerveConstants.REAR_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    private double simYaw = 0.0;
 
     private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -32,7 +34,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         this.poseEstimator = new SwerveDrivePoseEstimator(
                 SwerveConstants.DRIVE_KINEMATICS,
-                gyro.getRotation2d(),
+                getRotation(),
                 new SwerveModulePosition[] {
                         frontLeft.getPosition(),
                         frontRight.getPosition(),
@@ -45,12 +47,19 @@ public class SwerveSubsystem extends SubsystemBase {
         );
     }
 
+    public Rotation2d getRotation() {
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            return new Rotation2d(simYaw);
+        }
+        return gyro.getRotation2d();
+    }
+
     public void drive(double xVel, double yVel, double omega) {
         var swerveModuleStates =
                 SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
                         ChassisSpeeds.discretize(
                                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        xVel, yVel, omega, gyro.getRotation2d()),
+                                        xVel, yVel, omega, getRotation()),
                                 0.02
                         )
                 );
@@ -78,13 +87,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         if (poseEstimator != null) {
-            poseEstimator.resetPose(pose
-            );
+            if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+                simYaw = pose.getRotation().getRadians();
+            }
+            poseEstimator.resetPose(pose);
         }
     }
 
     public void zeroGyro() {
         gyro.reset();
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            simYaw = 0.0;
+        }
     }
 
     public Pose2d getPose() {
@@ -98,7 +112,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 backLeft.getState(),
                 backRight.getState()
         );
-        return ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeSpeeds, gyro.getRotation2d());
+        return ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeSpeeds, getRotation());
     }
 
     @Override
@@ -107,8 +121,23 @@ public class SwerveSubsystem extends SubsystemBase {
             return;
         }
 
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            frontLeft.updateSim(0.02);
+            frontRight.updateSim(0.02);
+            backLeft.updateSim(0.02);
+            backRight.updateSim(0.02);
+
+            ChassisSpeeds chassisSpeeds = SwerveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
+                    frontLeft.getState(),
+                    frontRight.getState(),
+                    backLeft.getState(),
+                    backRight.getState()
+            );
+            simYaw += chassisSpeeds.omegaRadiansPerSecond * 0.02;
+        }
+
         poseEstimator.update(
-                gyro.getRotation2d(),
+                getRotation(),
                 new SwerveModulePosition[] {
                         frontLeft.getPosition(),
                         frontRight.getPosition(),

@@ -14,9 +14,9 @@ public class SwerveConstants {
     public static final double MAGNITUDE_SLEW_RATE = 0;
     public static final double ROTATIONAL_SLEW_RATE = 0;
 
-    // Probably wrong
-    public static final double TRACK_WIDTH = 23;
-    public static final double WHEEL_BASE = 23;
+    // Track width and wheel base in meters (converted from 23 inches)
+    public static final double TRACK_WIDTH = Units.inchesToMeters(23);
+    public static final double WHEEL_BASE = Units.inchesToMeters(23);
 
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
             new SwerveDriveKinematics(
@@ -27,7 +27,7 @@ public class SwerveConstants {
 
     public static final double FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = 2.838;
     public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 1.968;
-    public static final double REAR_LEFT_CHASSIS_ANGULAR_OFFSET = 2.275;
+    public static final double REAR_LEFT_CHASSIS_ANGULAR_OFFSET = 2.275 + Math.PI;
     public static final double REAR_RIGHT_CHASSIS_ANGULAR_OFFSET = 4.359;
 
     public static final int FRONT_LEFT_DRIVING_CAN_ID = 3;
@@ -40,10 +40,10 @@ public class SwerveConstants {
     public static final int REAR_LEFT_TURNING_CAN_ID = 21;
     public static final int REAR_RIGHT_TURNING_CAN_ID = 8;
 
-    public static final double Turning_P = 0.5;
+    public static final double Turning_P = 5.0;
     public static final double Turning_D = 0.0;
 
-    public static final double Driving_P = 1.0;
+    public static final double Driving_P = 5.0;
     public static final double Driving_D = 0.0;
 
     public static final boolean GYRO_REVERSED = false;

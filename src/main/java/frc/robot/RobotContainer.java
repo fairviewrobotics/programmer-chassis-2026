@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.autonomous.SuperSecretMissileTech;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveToPoint;
+import frc.robot.commands.RotateToAngle;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Vision;
 
@@ -30,7 +33,7 @@ public class RobotContainer {
     final CommandPS5Controller primary_controller = new CommandPS5Controller(0);
     final CommandXboxController secondary_controller = new CommandXboxController(1);
     private final SwerveSubsystem swerve = new SwerveSubsystem();
-//    private final SuperSecretMissileTech superSecretMissileTech = new SuperSecretMissileTech(swerve);
+    private final SuperSecretMissileTech superSecretMissileTech = new SuperSecretMissileTech(swerve);
     private final Vision vision = new Vision(swerve);
 
     /**
@@ -54,18 +57,19 @@ public class RobotContainer {
     private void configureBindings()
     {
         swerve.setDefaultCommand(
+
                 new DriveCommand(
                         swerve,
-                        primary_controller::getLeftX,
+                        () -> -1 * primary_controller.getLeftX(),
                         primary_controller::getLeftY,
                         () -> -1 * primary_controller.getRightX()
                 )
         );
 
         primary_controller.options().onTrue(new InstantCommand(swerve::zeroGyro));
-        primary_controller.pov(180).onTrue(new InstantCommand(() -> swerve.resetOdometry(Pose2d.kZero)));
+        primary_controller.pov(180).onTrue(new InstantCommand(() -> swerve.resetOdometry(FieldConstants.START_POINT)));
         primary_controller.cross().whileTrue(
-            new DriveToPoint(swerve, new Pose2d(1,0, Rotation2d.kZero), 0.2)
+            new RotateToAngle(swerve, Rotation2d.kZero)
         );
 
 //        secondary_controller.rightStick().onTrue(new RefreshPreferences(swerve));
@@ -78,9 +82,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
 
-//    public Command getAutonomousCommand()
-//    {
-//        return superSecretMissileTech.getSelected();
-//    }
+    public Command getAutonomousCommand()
+    {
+        return superSecretMissileTech.getSelected();
+    }
 
 }

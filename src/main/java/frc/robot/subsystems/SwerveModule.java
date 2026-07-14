@@ -34,6 +34,7 @@ public class SwerveModule extends SubsystemBase {
 
     private final double chassisAngularOffset;
     private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private double simPosition = 0.0;
 
     private SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(0, 0.22, 0, 0.02);
@@ -64,15 +65,25 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public SwerveModuleState getState() {
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            return desiredState;
+        }
         return new SwerveModuleState(
                 drivingEncoder.getVelocity(),
                 new Rotation2d(turningEncoder.getPosition() - chassisAngularOffset));
     }
 
     public SwerveModulePosition getPosition() {
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            return new SwerveModulePosition(simPosition, desiredState.angle);
+        }
         return new SwerveModulePosition(
                 drivingEncoder.getPosition(),
                 new Rotation2d(turningEncoder.getPosition() - chassisAngularOffset));
+    }
+
+    public void updateSim(double dt) {
+        simPosition += desiredState.speedMetersPerSecond * dt;
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
@@ -108,6 +119,7 @@ public class SwerveModule extends SubsystemBase {
 
     public void resetEncoders() {
         drivingEncoder.setPosition(0);
+        simPosition = 0.0;
     }
 
     public void setTurningVoltage(double voltage) {

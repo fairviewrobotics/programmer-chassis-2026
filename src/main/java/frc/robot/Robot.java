@@ -29,20 +29,20 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   public Robot() {
-    m_robotContainer = new RobotContainer();
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
-//      Logger.addDataReceiver(new WPILOGWriter());
+      Logger.addDataReceiver(new WPILOGWriter());
       Logger.addDataReceiver(new NT4Publisher());
     } else {
-      setUseTiming(false);
-      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+      // Real-time simulation (not replay)
+      Logger.addDataReceiver(new NT4Publisher());
+      Logger.addDataReceiver(new WPILOGWriter("sim_logs/"));
     }
 
     Logger.start();
+
+    m_robotContainer = new RobotContainer();
   }
 
   /**
@@ -71,7 +71,11 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    if (m_autonomousCommand != null) {
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    }
   }
 
   /** This function is called periodically during autonomous. */

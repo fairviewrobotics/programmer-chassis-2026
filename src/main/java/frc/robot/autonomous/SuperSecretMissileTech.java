@@ -3,6 +3,8 @@ package frc.robot.autonomous;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.autonomous.routines.ArcTestAuto;
+import frc.robot.autonomous.routines.TestAuto;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SuperSecretMissileTech {
@@ -11,6 +13,8 @@ public class SuperSecretMissileTech {
 
     public SuperSecretMissileTech(SwerveSubsystem swerve) {
         superSecretMissileTech.setDefaultOption("NOTHING", new SequentialCommandGroup());
+        superSecretMissileTech.addOption("TEST AUTO", new TestAuto(swerve));
+        superSecretMissileTech.addOption("ARC TEST AUTO", new ArcTestAuto(swerve));
         SmartDashboard.putData("Autonomous Selector", superSecretMissileTech);
     }
 

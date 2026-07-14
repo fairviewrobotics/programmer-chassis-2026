@@ -14,9 +14,9 @@ import java.util.Set;
 public class TestAuto extends SequentialCommandGroup {
     public TestAuto(SwerveSubsystem swerveSubsystem) {
         setName("TEST AUTO");
-        addRequirements(swerveSubsystem);
         addCommands(
                 Commands.defer(() -> {
+
                     return new SequentialCommandGroup(
                             new InstantCommand(() -> {
                                 Pose2d startPose = AllianceFlipUtil.apply(FieldConstants.START_POINT);
@@ -27,6 +27,7 @@ public class TestAuto extends SequentialCommandGroup {
                             new DriveToPoint(swerveSubsystem, AllianceFlipUtil.apply(FieldConstants.BOTTOM_LEFT_POINT), 0.75),
                             new DriveToPoint(swerveSubsystem, AllianceFlipUtil.apply(FieldConstants.START_POINT), 0.75)
                     );
+
                 }, Set.of(swerveSubsystem))
         );
     }
